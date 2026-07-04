@@ -219,7 +219,7 @@ async function pollChat() {
 }
 
 
-const config = {'video_id':'OZiffRykJX8'};
+const config = {'video_id':'OZiffRykJX8'}; // put your video id here
 currentVideoId = config.video_id;
 if (currentVideoId) {
     newContinuation = await getInitialContinuation(currentVideoId);
