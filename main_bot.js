@@ -38,7 +38,7 @@ function sendMessage(text) {
                     clientVersion: '2.20260630.03.00'
                 }
             },
-            params: 'Q2lrcUp3b1lWVU5TWHpaWVVrZEVVRmh4TWxsbVltSnFSbGxGV2tGQkVndFBXbWxtWmxKNWEwcFlPQkFCR0FRJTNE',
+            params: 'Q2lrcUp3b1lWVU5TWHpaWVVrZEVVRmh4TWxsbVltSnFSbGxGV2tGQkVndFBXbWxtWmxKNWEwcFlPQkFCR0FRJTNE', // change this to the live chat id, you can get this by looking at your browsers devtools network tab and sending a message
             richMessage: {
                 textSegments: [
                     {
