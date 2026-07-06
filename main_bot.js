@@ -204,13 +204,21 @@ async function pollChat() {
                 plainText = messageRunsToText(message);
 
                 console.log(`${authorhandler}: ${plainText}`)
-                if (plainText.startsWith('!say ') && !plainText.includes('!say !say !say'))
-                    sendMessage(plainText.slice(5));
-
-                if (plainText.startsWith('!kubuai '))
-                    AI(plainText.slice(8), authorhandler).then(result => {
-                        sendMessage(result);
-                    });
+                if (authorhandler !== '@vistaaaaguyyy') {
+                    if (plainText.startsWith('!say ') && !plainText.includes('!say !say !say'))
+                        sendMessage(plainText.slice(5));
+    
+                    if (plainText.startsWith('!kubuai '))
+                        AI(plainText.slice(8), authorhandler).then(result => {
+                            sendMessage(result);
+                        });
+    
+                    if (plainText.startsWith('!commands'))
+                        sendMessage('Commands: !say [message] - says a message, !kubuai [question] - says a question, !rng - generates a random number from 0 to 1')
+    
+                    if (plainText.startsWith('!rng'))
+                        sendMessage(Math.random().toString());
+                }
             }
         } catch (e) {
             console.log("error:", e);
