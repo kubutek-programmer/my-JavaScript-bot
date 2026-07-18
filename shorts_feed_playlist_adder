@@ -1,0 +1,33 @@
+authorization = /* Put your YouTube token here */;
+playlistId = /* put the playlist ID here */;
+
+document.addEventListener('yt-navigate-finish', () => {
+    videoId = location.href.replaceAll('https://www.youtube.com/shorts/', '');
+    fetch('https://www.youtube.com/youtubei/v1/browse/edit_playlist?prettyPrint=false', {
+        headers: {
+            authorization,
+        },
+        body: JSON.stringify({
+            context: {
+                client: {
+                    clientName: 'WEB',
+                    clientVersion: '2.20260715.04.00'
+                }
+            },
+            actions: [
+                {
+                    'addedVideoId': videoId,
+                    'action': 'ACTION_ADD_VIDEO'
+                }
+            ],
+            params: 'IAE%3D', // idk what this is but
+            playlistId
+        }),
+        method: 'POST',
+    }).then((res) => {
+        if (res.ok)
+            console.log(`Succesfully added ${videoId} to the playlist`);
+        else
+            console.log(`Failed with code ${res.status}`);
+    });
+});
