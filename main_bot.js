@@ -1,7 +1,7 @@
 YTToken = /* put your YouTube authorization token here */;
 AIToken = /* put your Groq API key here */;
 
-async function AI(question, authorhandler) {
+async function AI(question, authorhandle) {
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: 'POST',
         headers: {
@@ -13,7 +13,7 @@ async function AI(question, authorhandler) {
             messages: [
                 {
                     role: 'system',
-                    content: `You are KubuAI, a witty AI. Respond at maximum 200 characters. You are inspired from AquilAI, and AquilAI is inpired from NexoAI. Your questions are sent from a public chat, since you’re meant to be a YouTube chatbot. Here’s the person that asked you a question, so that you can know their name: ${authorhandler}`
+                    content: `You are KubuAI, a witty AI. Respond at maximum 200 characters. You are inspired from AquilAI, and AquilAI is inpired from NexoAI. Your questions are sent from a public chat, since you’re meant to be a YouTube chatbot. Here’s the person that asked you a question, so that you can know their name: ${authorhandle}`
                 },
                 {
                     role: 'user',
@@ -38,7 +38,7 @@ function sendMessage(text) {
                     clientVersion: '2.20260630.03.00'
                 }
             },
-            params: 'Q2lrcUp3b1lWVU5TWHpaWVVrZEVVRmh4TWxsbVltSnFSbGxGV2tGQkVndFBXbWxtWmxKNWEwcFlPQkFCR0FRJTNE', // change this to the live chat id, you can get this by looking at your browsers devtools network tab and sending a message
+            params: 'Q2lrcUp3b1lWVU5UTlhwYU1YTlpZMGxqUTNCMVdUQlRWRWcyVFVobkVndE1TbVJPVG1oVFRHSXdUUkFCR0FRJTNE', // change this to the live chat id, you can get this by looking at your browsers devtools network tab and sending a message
             richMessage: {
                 textSegments: [
                     {
@@ -48,16 +48,23 @@ function sendMessage(text) {
             }
         }),
         method: 'POST',
+    }).then((res) => {
+        return res.json();
+    }).then((json) => {
+        console.log(json);
+        if (json.errorMessage) sendMessage('Error: ${messageRunsToText(json.errorMessage.liveChatTextActionsErrorMessageRenderer.errorText.runs)}');
     });
 }
 
-function messageRunsToText(parts) {
-    return parts.map(part => {
-        if (part.type === "text")
-            return part.value;
+function messageRunsToText(runs = []) {
+    return runs.map(item => {
+        if (item.text) {
+            return item.text;
+        }
 
-        if (part.type === "emoji")
-            return part.id;
+        if (item.emoji?.emojiId) {
+            return item.emoji.emojiId;
+        }
 
         return "";
     }).join("");
@@ -109,32 +116,6 @@ function getContinuation(json) {
   cont.liveChatReplayContinuationData?.continuation ||
   null
  );
-}
-
-// Emoji paresr
-function parseMessageRuns(runs = []) {
- return runs.map(item => {
-  if (item.text) {
-   return { type: "text", value: item.text };
-  }
-
-  if (item.emoji?.emojiId) {
-   const emoji = item.emoji;
-
-   // Pick thumbnail[1] or fallback to [0]
-   const thumb =
-    emoji.image?.thumbnails?.[1]?.url ||
-    emoji.image?.thumbnails?.[0]?.url;
-
-   return {
-    type: "emoji",
-    id: emoji.emojiId,
-    url: thumb
-   };
-  }
-
-  return null;
- }).filter(Boolean);
 }
 
 // Chat loop
@@ -199,26 +180,64 @@ async function pollChat() {
                         seenMessageIds.delete(oldest);
                     }
                 }
-                const message = parseMessageRuns(renderer.message?.runs ?? []);
-                const authorhandler = renderer.authorName?.simpleText ?? "Unknown";
-                plainText = messageRunsToText(message);
+        		const pfp =
+        		 renderer.authorPhoto?.thumbnails?.at(-1)?.url ||
+        		 renderer.authorPhoto?.thumbnails?.[0]?.url;
+                const message = messageRunsToText(renderer.message?.runs ?? []);
+                const authorID = renderer.authorExternalChannelId ?? "Unknown";
+                const authorhandle = renderer.authorName?.simpleText ?? "Unknown";
 
-                console.log(`${authorhandler}: ${plainText}`)
-                if (authorhandler !== '@vistaaaaguyyy') {
-                    if (plainText.startsWith('!say ') && !plainText.includes('!say !say !say'))
-                        sendMessage(plainText.slice(5));
-    
-                    if (plainText.startsWith('!kubuai '))
-                        AI(plainText.slice(8), authorhandler).then(result => {
-                            sendMessage(result);
-                        });
-    
-                    if (plainText.startsWith('!commands'))
-                        sendMessage('Commands: !say [message] - says a message, !kubuai [question] - says a question, !rng - generates a random number from 0 to 1')
-    
-                    if (plainText.startsWith('!rng'))
-                        sendMessage(Math.random().toString());
+                console.log(`${authorhandle}: ${message}`)
+                const isCommand = message.startsWith("!");
+                
+                if (isCommand) {
+                    const [command, ...args] = message.split(" ");
+                
+                    const commands = {
+                        '!say': () => {
+                            if (!message.includes('!say !say !say')) {
+                                sendMessage(args.join(' '));
+                            }
+                        },
+                
+                        '!kubuai': async () => {
+                            sendMessage(await AI(args.join(' '), authorhandle));
+                        },
+                
+                        '!commands': () => {
+                            const page = args[0] ?? '1';
+                
+                            const pages = { // YouTube Live Chat has a 200-character limit
+                                '1': 'Commands page 1/2: !commands / !cmds [page], !say [msg] - says a message, !kubuai [question] - asks KubuAI a question, !rng - generates a random number from 0 to 1, !revertical - [cant say, too long]',
+                                '2': 'Commands page 2/2: !revertical - dawg WHO said "revertical" 😭✌, e - E, !userdata - Shows your user data',
+                            };
+                
+                            if (pages[page]) {
+                                sendMessage(pages[page]);
+                            }
+                        },
+                
+                        // Alias
+                        '!cmds': () => commands['!commands'](),
+                
+                        '!rng': () => {
+                            sendMessage(Math.random().toString());
+                        },
+                
+                        '!revertical': () => {
+                            sendMessage('dawg WHO said "revertical" 😭✌');
+                        },
+
+                        '!userdata': () => {
+                            sendMessage(`Your data: Channel handle: ${authorhandle}, Channel ID: ${authorID}, Profile picture link: ${pfp}`);
+                        }
+                    };
+                
+                    commands[command]?.();
                 }
+
+                // support the funny E meme
+                if (message.toLowerCase() == 'e' && authorhandle !== '@Kubutek-programmer') sendMessage("E");
             }
         } catch (e) {
             console.log("error:", e);
@@ -227,11 +246,15 @@ async function pollChat() {
 }
 
 
-const config = {'video_id':'OZiffRykJX8'}; // put your video id here
+const config = {'video_id':'LJdNNhSLb0M'}; // put your video id here
 currentVideoId = config.video_id;
 if (currentVideoId) {
     newContinuation = await getInitialContinuation(currentVideoId);
     pollChat();
 }
 
-sendMessage('Kubutek bot is running! Talk with KubuAI: !kubuai, AI model: llama-3.3-70b-versatile')
+sendMessage('Kubutek bot is running! Talk with KubuAI: !kubuai, AI model: llama-3.3-70b-versatile');
+
+setInterval(() => {
+    sendMessage(`You can suggest what to add for KubuBot!`);
+}, 120000);
