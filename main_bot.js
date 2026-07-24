@@ -52,7 +52,7 @@ function sendMessage(text) {
         return res.json();
     }).then((json) => {
         console.log(json);
-        if (json.errorMessage) sendMessage('Error: ${messageRunsToText(json.errorMessage.liveChatTextActionsErrorMessageRenderer.errorText.runs)}');
+        if (json.errorMessage) sendMessage(`Error: ${messageRunsToText(json.errorMessage.liveChatTextActionsErrorMessageRenderer.errorText.runs)}`);
     });
 }
 
