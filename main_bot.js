@@ -38,7 +38,7 @@ function sendMessage(text) {
                     clientVersion: '2.20260630.03.00'
                 }
             },
-            params: 'Q2lrcUp3b1lWVU5UTlhwYU1YTlpZMGxqUTNCMVdUQlRWRWcyVFVobkVndE1TbVJPVG1oVFRHSXdUUkFCR0FRJTNE', // change this to the live chat id, you can get this by looking at your browsers devtools network tab and sending a message
+            params: 'Q2lrcUp3b1lWVU5UTlhwYU1YTlpZMGxqUTNCMVdUQlRWRWcyVFVobkVndE1TbVJPVG1oVFRHSXdUUkFCR0FRJTNE', // change this to the live chat continuation token, you can get this by looking at your browsers devtools network tab and sending a message
             richMessage: {
                 textSegments: [
                     {
