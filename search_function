@@ -1,0 +1,38 @@
+						'!search': () => {
+							let query = message.substring(message.indexOf(' ') + 1);
+							fetch('https://www.youtube.com/youtubei/v1/search?prettyPrint=false', {
+								body: JSON.stringify({
+									context: {
+										client: {
+											clientName: 'WEB',
+											clientVersion: '2.20260813.05.00'
+										}
+									},
+									query
+								}),
+								method: 'POST'
+							}).then((res) => {
+								return res.json();
+							}).then((json) => {
+								let contents = json.contents.twoColumnSearchResultsRenderer.primaryContents.sectionListRenderer.contents[0].itemSectionRenderer.contents
+								let topResult = contents[0];
+								console.log(topResult); // DEBUG
+								if (topResult.channelRenderer) {
+									console.log(`Result: Channel: youtube.com/channel/${topResult.channelRenderer.channelId}`);
+									sendMessage(`Result: Channel: youtube.com/channel/${topResult.channelRenderer.channelId}`);
+									return;
+								}
+								if (topResult.videoRenderer) {
+									console.log(`Result: Video: youtu.be/${topResult.videoRenderer.videoId}`);
+									sendMessage(`Result: Video: youtu.be/${topResult.videoRenderer.videoId}`);
+									return;
+								}e
+								if (topResult.didYouMeanRenderer) {
+									console.log(`Did you mean: ${messageRunsToText(topResult.didYouMeanRenderer.correctedQuery.runs)}`);
+									sendMessage(`Did you mean: ${messageRunsToText(topResult.didYouMeanRenderer.correctedQuery.runs)}`);
+									return;
+								}
+								console.log('Either no results found or an invalid renderer has appeared. Retry the search or change it.');
+								sendMessage('Either no results found or an invalid renderer has appeared. Retry the search or change it.');
+							});
+						}
