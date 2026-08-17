@@ -26,7 +26,7 @@
 									console.log(`Result: Video: youtu.be/${topResult.videoRenderer.videoId}`);
 									sendMessage(`Result: Video: youtu.be/${topResult.videoRenderer.videoId}`);
 									return;
-								}e
+								}
 								if (topResult.didYouMeanRenderer) {
 									console.log(`Did you mean: ${messageRunsToText(topResult.didYouMeanRenderer.correctedQuery.runs)}`);
 									sendMessage(`Did you mean: ${messageRunsToText(topResult.didYouMeanRenderer.correctedQuery.runs)}`);
