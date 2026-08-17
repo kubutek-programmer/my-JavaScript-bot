@@ -321,6 +321,3 @@ sendMessage('Kubutek bot is running! Talk with KubuAI: !kubuai, AI model: openai
 setInterval(() => {
 	sendMessage('Hello, I’m Kububot (or Kubuchatbot, Kubutekchatbot)! Chat with my AI: !kubuai [question]!');
 }, 120000);
-setInterval(() => {
-    sendMessage(`You can suggest what to add for KubuBot!`);
-}, 120000);
