@@ -45,7 +45,7 @@ function sendMessage(text) {
                     clientVersion: '2.20260630.03.00'
                 }
             },
-            params: 'Q2lrcUp3b1lWVU5MY21wU05XVjBabG8wU0ZsaE9HMWFPR2xpWTBGUkVnczFTekl3V1hGa1VUQk1VUkFCR0FRJTNE', // change this to the live chat continuation token, you can get this by looking at your browsers devtools network tab and sending a message
+            params: 'Q2lrcUp3b1lWVU5MY21wU05XVjBabG8wU0ZsaE9HMWFPR2xpWTBGUkVndDNTa1Z5UkVnNGIwbGlaeEFCR0FRJTNE', // change this to the live chat continuation token, you can get this by looking at your browsers devtools network tab and sending a message
             richMessage: {
                 textSegments: [
                     {
@@ -79,7 +79,7 @@ function messageRunsToText(runs = []) {
 
 // Variables for chat loop
 const seenMessageIds = new Set();
-let currentVideoId = '5K20YqdQ0LQ';
+let currentVideoId = 'wJErDH8oIbg';
 let numTimes = 0;
 let newContinuation;
 let pollRunning = false;
@@ -302,7 +302,9 @@ async function pollChat() {
 				}
 
                 // support the funny E meme
-                if (message.toLowerCase() == 'e' && authorhandle !== '@Kubutek-programmer') sendMessage("E");
+                if (message.toLowerCase() == 'ė' && authorhandle !== '@Kubutek-programmer') sendMessage('ė');
+
+                if ((message.toLowerCase().startsWith('hi') || message.toLowerCase().startsWith('hello')) && !['@Kubutek-programmer', '@NabatChatbot'].includes(authorhandle)) sendMessage(`Hello ${authorhandle} 👋`);
             }
         } catch (e) {
             console.log("error:", e);
