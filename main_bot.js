@@ -65,10 +65,29 @@ function sendMessage(text) {
 
 function messageRunsToText(runs = []) {
     return runs.map(item => {
+        // Check for the navigationEndpoint and extract the 'q' parameter
+        if (item.navigationEndpoint?.urlEndpoint?.url) {
+            try {
+                // Parse the URL (adding a base URL just in case it's a relative path)
+                const parsedUrl = new URL(item.navigationEndpoint.urlEndpoint.url, "https://www.youtube.com");
+                const qParam = parsedUrl.searchParams.get('q');
+                
+                // If the 'q' parameter exists, return it instead of the standard text
+                if (qParam) {
+                    return qParam;
+                }
+            } catch (error) {
+                // If URL parsing fails, quietly fall back to the normal text check below
+                console.warn("Failed to parse navigationEndpoint URL", error);
+            }
+        }
+
+        // Fallback to normal text
         if (item.text) {
             return item.text;
         }
 
+        // Fallback to emoji
         if (item.emoji?.emojiId) {
             return item.emoji.emojiId;
         }
