@@ -311,7 +311,7 @@ async function pollChat() {
 				        },
 
 						'!googleslide': () => {
-							sendMessage('Here’s my Google Slide (you might need to request access): https://docs.google.com/presentation/u/0/d/19gqOigmQLWUp7XFSpgwAyOcctQgyEy6H06WMy2oI_Xc/edit');
+							sendMessage('Here’s my Google Slide (you might need to request access): https://docs.google.com/presentation/d/1o969eoCDEg58iC617UBh9hPOVxNSgopqsYj4EXPn1xY');
 						},
 
 						'!github': () => {
